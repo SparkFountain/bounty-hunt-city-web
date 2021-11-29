@@ -1,0 +1,25 @@
+<div class="hud">
+  <div class="unknown"></div>
+  <div class="bounty-hunter">
+    <mat-icon
+      *ngFor="let star of [].constructor(player.bountyHunters)"
+      aria-hidden="false"
+      aria-label="Example home icon"
+    >
+      star_rate
+    </mat-icon>
+  </div>
+  <div class="cash">
+    {{ player.cash | cash }}
+    <mat-icon aria-hidden="false" aria-label="Example home icon">
+      attach_money
+    </mat-icon>
+  </div>
+</div>
+
+<div class="map">
+  <div
+    class="player"
+    [style]="{ transform: 'rotate(' + player.rotationAngle + 'deg)' }"
+  ></div>
+</div>

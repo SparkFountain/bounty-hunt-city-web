@@ -1,0 +1,36 @@
+:host {
+  overflow: hidden !important;
+  margin: 0;
+  padding: 0;
+}
+
+.hud {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  width: 100vw;
+  height: 50px;
+  background: red;
+
+  font-size: 24px;
+
+  div {
+    width: 200px;
+    background-color: yellow;
+  }
+}
+
+.map {
+  .player {
+    position: absolute;
+    top: 200px;
+    left: 200px;
+
+    width: 48px;
+    height: 48px;
+
+    background: url("/assets/characters/example-player.png");
+  }
+}
