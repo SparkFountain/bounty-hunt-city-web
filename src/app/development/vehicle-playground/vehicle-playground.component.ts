@@ -73,10 +73,26 @@ export class VehiclePlaygroundComponent
       this.canvas.nativeElement.height
     );
 
+    // turn car around
     if (this.ioService.isKeyPressed('ArrowLeft')) {
       this.car.rotation--;
-    } else if (this.ioService.isKeyPressed('ArrowRight')) {
+    }
+    if (this.ioService.isKeyPressed('ArrowRight')) {
       this.car.rotation++;
+    }
+
+    // move car
+    if (this.ioService.isKeyPressed('w')) {
+      this.car.position.y--;
+    }
+    if (this.ioService.isKeyPressed('s')) {
+      this.car.position.y++;
+    }
+    if (this.ioService.isKeyPressed('a')) {
+      this.car.position.x--;
+    }
+    if (this.ioService.isKeyPressed('d')) {
+      this.car.position.x++;
     }
 
     this.drawCar();
@@ -86,12 +102,18 @@ export class VehiclePlaygroundComponent
   }
 
   drawCar(): void {
+    // example rect to show the 200 pixel offset are correctly rendered
+    this.ctx.fillRect(0, 0, this.car.position.x, this.car.position.y);
+
     // cache rendering context
     this.ctx.save();
 
     // set center point of car for rotation
     const centerPoint = this.car.getCenterPoint();
-    this.ctx.translate(centerPoint.x, centerPoint.y);
+    this.ctx.translate(
+      centerPoint.x + this.car.position.x,
+      centerPoint.y + this.car.position.y
+    );
 
     // rotate car (calculate rotation value in radians)
     this.ctx.rotate(this.car.rotation * 0.01745);
