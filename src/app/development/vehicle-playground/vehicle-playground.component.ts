@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { MathService } from 'src/app/services/math.service';
+import { VehicleService } from 'src/app/services/vehicle.service';
 import { CarType } from '../../core/vehicles/car-type.enum';
 import { Car } from '../../core/vehicles/car.class';
 import { IoService } from '../../services/io.service';
@@ -35,7 +36,11 @@ export class VehiclePlaygroundComponent
   // other test sprites
   rect!: HTMLImageElement;
 
-  constructor(private ioService: IoService, private mathService: MathService) {}
+  constructor(
+    private ioService: IoService,
+    private mathService: MathService,
+    private vehicleService: VehicleService
+  ) {}
 
   ngOnInit(): void {}
 
@@ -53,10 +58,18 @@ export class VehiclePlaygroundComponent
     this.rect.src = '/assets/sprites/rectangle.png';
 
     // create car
-    this.car = new Car(CarType.Demo, { x: 400, y: 200 }, 135, 0.2, 0.2);
-    this.car.sprite.onLoaded$
+    this.vehicleService
+      .createCar$()
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => requestAnimationFrame(this.updateWorld.bind(this)));
+      .subscribe((car: Car) => {
+        this.car = car;
+        requestAnimationFrame(this.updateWorld.bind(this));
+      });
+
+    // this.car = new Car(CarType.Demo, { x: 400, y: 200 }, 135, 0.2, 0.2);
+    // this.car.sprite.onLoaded$
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe(() => requestAnimationFrame(this.updateWorld.bind(this)));
   }
 
   ngOnDestroy(): void {
@@ -73,72 +86,7 @@ export class VehiclePlaygroundComponent
       this.canvas.nativeElement.height
     );
 
-    // turn car around
-    if (this.ioService.isKeyPressed('ArrowLeft')) {
-      if (Math.abs(this.car.speed) > 0.5) {
-        this.car.rotation -= 2;
-      } else if (Math.abs(this.car.speed) < 0.5) {
-        this.car.rotation += 2;
-      }
-    }
-    if (this.ioService.isKeyPressed('ArrowRight')) {
-      if (Math.abs(this.car.speed) > 0.5) {
-        this.car.rotation += 2;
-      } else if (Math.abs(this.car.speed) < 0.5) {
-        this.car.rotation -= 2;
-      }
-    }
-
-    if (this.ioService.isKeyPressed('ArrowUp')) {
-      // accelerate car
-      if (this.car.speed < 10) {
-        this.car.speed += this.car.acceleration;
-      }
-    } else if (this.ioService.isKeyPressed('ArrowDown')) {
-      // apply breaks or reverse gear
-      this.car.speed -= this.car.acceleration;
-    } else {
-      // slow down car by friction
-      if (this.car.speed > 0) {
-        this.car.speed -= this.car.friction;
-
-        // stop car if speed has become negative
-        if (this.car.speed < 0) {
-          this.car.speed = 0;
-        }
-      } else if (this.car.speed < 0) {
-        this.car.speed += this.car.friction;
-
-        // stop car if speed has become positive
-        if (this.car.speed > 0) {
-          this.car.speed = 0;
-        }
-      }
-    }
-
-    // move car dynamically
-    if (this.car.speed !== 0) {
-      this.car.position.x -=
-        Math.sin(this.mathService.degToRad(-this.car.rotation)) *
-        this.car.speed;
-      this.car.position.y -=
-        Math.cos(this.mathService.degToRad(-this.car.rotation)) *
-        this.car.speed;
-    }
-
-    // move car statically
-    if (this.ioService.isKeyPressed('w')) {
-      this.car.position.y--;
-    }
-    if (this.ioService.isKeyPressed('s')) {
-      this.car.position.y++;
-    }
-    if (this.ioService.isKeyPressed('a')) {
-      this.car.position.x--;
-    }
-    if (this.ioService.isKeyPressed('d')) {
-      this.car.position.x++;
-    }
+    this.vehicleService.updateVehicles();
 
     this.drawCar();
 
