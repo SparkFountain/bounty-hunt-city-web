@@ -8,6 +8,8 @@ export class Vehicle {
     y: number;
   };
   rotation!: number;
+  acceleration!: number;
+  friction!: number;
 
   sprite!: Sprite;
 

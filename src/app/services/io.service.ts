@@ -7,10 +7,10 @@ import { fromEvent, Subscription, tap } from 'rxjs';
 export class IoService implements OnDestroy {
   // track mouse down and up events
   mouseDownEvent = fromEvent(window, 'mousedown').pipe(
-    tap((event) => console.log('>>> Mouse Down', event))
+    // tap((event) => console.log('>>> Mouse Down', event))
   );
   mouseUpEvent = fromEvent(window, 'mouseup').pipe(
-    tap((event) => console.log('>>> Mouse Up', event))
+    // tap((event) => console.log('>>> Mouse Up', event))
   );
 
   // track key down and up events

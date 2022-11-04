@@ -7,6 +7,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
+import { MathService } from 'src/app/services/math.service';
 import { CarType } from '../../core/vehicles/car-type.enum';
 import { Car } from '../../core/vehicles/car.class';
 import { IoService } from '../../services/io.service';
@@ -34,7 +35,7 @@ export class VehiclePlaygroundComponent
   // other test sprites
   rect!: HTMLImageElement;
 
-  constructor(private ioService: IoService) {}
+  constructor(private ioService: IoService, private mathService: MathService) {}
 
   ngOnInit(): void {}
 
@@ -52,8 +53,7 @@ export class VehiclePlaygroundComponent
     this.rect.src = '/assets/sprites/rectangle.png';
 
     // create car
-    this.car = new Car(CarType.Demo);
-    console.log('>>> car', this.car);
+    this.car = new Car(CarType.Demo, { x: 400, y: 200 }, 135, 0.2, 0.2);
     this.car.sprite.onLoaded$
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => requestAnimationFrame(this.updateWorld.bind(this)));
@@ -75,13 +75,58 @@ export class VehiclePlaygroundComponent
 
     // turn car around
     if (this.ioService.isKeyPressed('ArrowLeft')) {
-      this.car.rotation--;
+      if (Math.abs(this.car.speed) > 0.5) {
+        this.car.rotation -= 2;
+      } else if (Math.abs(this.car.speed) < 0.5) {
+        this.car.rotation += 2;
+      }
     }
     if (this.ioService.isKeyPressed('ArrowRight')) {
-      this.car.rotation++;
+      if (Math.abs(this.car.speed) > 0.5) {
+        this.car.rotation += 2;
+      } else if (Math.abs(this.car.speed) < 0.5) {
+        this.car.rotation -= 2;
+      }
     }
 
-    // move car
+    if (this.ioService.isKeyPressed('ArrowUp')) {
+      // accelerate car
+      if (this.car.speed < 10) {
+        this.car.speed += this.car.acceleration;
+      }
+    } else if (this.ioService.isKeyPressed('ArrowDown')) {
+      // apply breaks or reverse gear
+      this.car.speed -= this.car.acceleration;
+    } else {
+      // slow down car by friction
+      if (this.car.speed > 0) {
+        this.car.speed -= this.car.friction;
+
+        // stop car if speed has become negative
+        if (this.car.speed < 0) {
+          this.car.speed = 0;
+        }
+      } else if (this.car.speed < 0) {
+        this.car.speed += this.car.friction;
+
+        // stop car if speed has become positive
+        if (this.car.speed > 0) {
+          this.car.speed = 0;
+        }
+      }
+    }
+
+    // move car dynamically
+    if (this.car.speed !== 0) {
+      this.car.position.x -=
+        Math.sin(this.mathService.degToRad(-this.car.rotation)) *
+        this.car.speed;
+      this.car.position.y -=
+        Math.cos(this.mathService.degToRad(-this.car.rotation)) *
+        this.car.speed;
+    }
+
+    // move car statically
     if (this.ioService.isKeyPressed('w')) {
       this.car.position.y--;
     }
@@ -103,7 +148,7 @@ export class VehiclePlaygroundComponent
 
   drawCar(): void {
     // example rect to show the 200 pixel offset are correctly rendered
-    this.ctx.fillRect(0, 0, this.car.position.x, this.car.position.y);
+    // this.ctx.fillRect(0, 0, this.car.position.x, this.car.position.y);
 
     // cache rendering context
     this.ctx.save();
@@ -116,7 +161,7 @@ export class VehiclePlaygroundComponent
     );
 
     // rotate car (calculate rotation value in radians)
-    this.ctx.rotate(this.car.rotation * 0.01745);
+    this.ctx.rotate(this.mathService.degToRad(this.car.rotation));
 
     // render car image
     this.ctx.drawImage(this.car.getSprite(), -centerPoint.x, -centerPoint.y);

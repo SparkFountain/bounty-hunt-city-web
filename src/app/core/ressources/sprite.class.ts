@@ -5,7 +5,7 @@ export class Sprite {
   onLoaded$!: Observable<void>;
 
   constructor(imagePath: string) {
-    console.log('>>> sprit has been created');
+    // console.log('>>> sprite has been created');
     this.onLoaded$ = new Observable<void>((subscriber: Observer<void>) => {
       this.image = new Image();
       this.image.src = imagePath;
