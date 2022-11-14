@@ -4,6 +4,11 @@ import { VehiclePlaygroundComponent } from './vehicle-playground/vehicle-playgro
 
 const routes: Routes = [
   {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'vehicle-playground',
+  },
+  {
     path: 'vehicle-playground',
     component: VehiclePlaygroundComponent,
   },
