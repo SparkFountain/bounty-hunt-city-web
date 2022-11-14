@@ -100,16 +100,16 @@ export class VehicleService {
     for (const [id, car] of Object.entries(this.cars)) {
       // turn car around
       if (this.ioService.isKeyPressed('ArrowLeft')) {
-        if (Math.abs(car.speed) > 0.5) {
+        if (car.speed > 0.5) {
           car.rotation -= 2;
-        } else if (Math.abs(car.speed) < 0.5) {
+        } else if (car.speed < -0.5) {
           car.rotation += 2;
         }
       }
       if (this.ioService.isKeyPressed('ArrowRight')) {
-        if (Math.abs(car.speed) > 0.5) {
+        if (car.speed > 0.5) {
           car.rotation += 2;
-        } else if (Math.abs(car.speed) < 0.5) {
+        } else if (car.speed < -0.5) {
           car.rotation -= 2;
         }
       }

@@ -1,3 +1,8 @@
 <div #container class="container">
   <canvas #canvas [width]="canvas.width" [height]="canvas.height"></canvas>
+
+  <!-- Debug Information -->
+  <div class="debug-container">
+    <p>Car Speed: {{ car?.speed | number }}</p>
+  </div>
 </div>
