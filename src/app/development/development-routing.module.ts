@@ -1,16 +1,16 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { VehiclePlaygroundComponent } from './vehicle-playground/vehicle-playground.component';
+import { PlaygroundComponent } from './playground/playground.component';
 
 const routes: Routes = [
   {
     path: '',
-    pathMatch: 'full',
-    redirectTo: 'vehicle-playground',
+    pathMatch: 'prefix',
+    redirectTo: 'playground',
   },
   {
-    path: 'vehicle-playground',
-    component: VehiclePlaygroundComponent,
+    path: 'playground',
+    component: PlaygroundComponent,
   },
 ];
 

@@ -2,12 +2,12 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { DevelopmentRoutingModule } from './development-routing.module';
-import { VehiclePlaygroundComponent } from './vehicle-playground/vehicle-playground.component';
+import { PlaygroundComponent } from './playground/playground.component';
 
 
 @NgModule({
   declarations: [
-    VehiclePlaygroundComponent
+    PlaygroundComponent
   ],
   imports: [
     CommonModule,

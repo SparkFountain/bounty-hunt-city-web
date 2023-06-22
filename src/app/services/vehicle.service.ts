@@ -121,6 +121,7 @@ export class VehicleService {
         }
       } else if (this.ioService.isKeyPressed('ArrowDown')) {
         // apply breaks or reverse gear
+        // TODO: decide between break and reverse gear
         car.speed -= car.acceleration;
       } else {
         // slow down car by friction

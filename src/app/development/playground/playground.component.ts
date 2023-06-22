@@ -6,21 +6,20 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, withLatestFrom } from 'rxjs';
 import { MathService } from 'src/app/services/math.service';
 import { VehicleService } from 'src/app/services/vehicle.service';
-import { CarType } from '../../core/vehicles/car-type.enum';
+import { Character } from '../../core/characters/character.class';
 import { Car } from '../../core/vehicles/car.class';
+import { CharacterService } from '../../services/character.service';
 import { IoService } from '../../services/io.service';
 
 @Component({
-  selector: 'app-vehicle-playground',
-  templateUrl: './vehicle-playground.component.html',
-  styleUrls: ['./vehicle-playground.component.scss'],
+  selector: 'app-playground',
+  templateUrl: './playground.component.html',
+  styleUrls: ['./playground.component.scss'],
 })
-export class VehiclePlaygroundComponent
-  implements OnInit, AfterViewInit, OnDestroy
-{
+export class PlaygroundComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('container') container!: ElementRef<HTMLDivElement>;
   @ViewChild('canvas') canvas!: ElementRef<HTMLCanvasElement>;
 
@@ -33,13 +32,17 @@ export class VehiclePlaygroundComponent
   // test vehicles
   car!: Car;
 
+  // test characters
+  player!: Character;
+
   // other test sprites
   rect!: HTMLImageElement;
 
   constructor(
     private ioService: IoService,
     private mathService: MathService,
-    private vehicleService: VehicleService
+    private vehicleService: VehicleService,
+    private characterService: CharacterService
   ) {}
 
   ngOnInit(): void {}
@@ -57,19 +60,18 @@ export class VehiclePlaygroundComponent
     this.rect = new Image();
     this.rect.src = '/assets/sprites/rectangle.png';
 
-    // create car
+    // create car and player character
     this.vehicleService
       .createCar$()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((car: Car) => {
+      .pipe(
+        takeUntil(this.destroy$),
+        withLatestFrom(this.characterService.createCharacter$())
+      )
+      .subscribe(([car, character]: [Car, Character]) => {
         this.car = car;
+        this.player = character;
         requestAnimationFrame(this.updateWorld.bind(this));
       });
-
-    // this.car = new Car(CarType.Demo, { x: 400, y: 200 }, 135, 0.2, 0.2);
-    // this.car.sprite.onLoaded$
-    //   .pipe(takeUntil(this.destroy$))
-    //   .subscribe(() => requestAnimationFrame(this.updateWorld.bind(this)));
   }
 
   ngOnDestroy(): void {
